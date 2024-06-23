@@ -188,4 +188,4 @@ if worker_id:
     analyze_worker(worker_id)
 
 # Perform demographic analysis for all workers
-demographic_analysis_all()
+# demographic_analysis_all()
