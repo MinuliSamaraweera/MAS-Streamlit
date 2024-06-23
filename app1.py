@@ -179,7 +179,6 @@ def demographic_analysis_all():
     st.pyplot(fig)
 
 # Streamlit app layout
-# st.title("Worker Defect Analysis and Forecasting")
 st.title("Worker Defect Analysis and Forecasting")
 
 # Prompt user to enter Worker ID for defect prediction
