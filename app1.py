@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -12,6 +12,9 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.arima.model import ARIMA
+import matplotlib
+matplotlib.use('Agg')  # Use the Agg backend (for headless environments)
+import matplotlib.pyplot as plt
 
 # Load the data
 @st.cache_data
