@@ -55,7 +55,7 @@ def update_defect_counts(worker_id, date_str, shift, run_off_d1, open_seam_d2, s
             
             writer.writerow(new_data)
         
-        st.success("Data successfully Submit.")
+        st.success("Data successfully submitted.")
     except Exception as e:
         st.error(f"Error occurred: {e}")
 
@@ -71,8 +71,8 @@ def main():
     
     # Date selection restricted to today and previous day
     max_date = date.today()
-    min_date = max_date - timedelta(days=2)  # Today and previous two days
-    date_selected = st.date_input('Select Date:', min_value=min_date, max_value=max_date)
+    min_date = max_date - timedelta(days=1)  # Today and previous one day
+    date_selected = st.date_input('Select Date:', min_value=min_date, max_value=max_date, value=max_date)
     
     shift = st.selectbox('Select Shift:', options=['Morning', 'Afternoon', 'Evening'])
     run_off_d1 = st.number_input('Run_Off_D1 count:', min_value=0)
