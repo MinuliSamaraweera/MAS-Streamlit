@@ -1,0 +1,2 @@
+Worker_ID,Date,Run_Off_D1,Open_Seam_D2,SPI_Errors_D3,High_Low_D4,Production_Volume,Shift,defect_count,count
+W_00003,06/25/24,10,0,0,0,700,Morning,10,690
