@@ -12,7 +12,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.multioutput import MultiOutputRegressor
 from sklearn.metrics import mean_squared_error
 from statsmodels.tsa.arima.model import ARIMA
-import matplotlib
+import matplotlib 
 matplotlib.use('Agg')  # Use the Agg backend (for headless environments)
 import matplotlib.pyplot as plt
 
