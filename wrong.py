@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-# import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -115,15 +114,6 @@ def analyze_worker(worker_id, forecast_steps=5):
         arima_forecasts[defect_type] = forecast
         rmses[defect_type] = calculate_rmse(worker_data[defect_type][-forecast_steps:], forecast)
     
-    # # Display RMSE values
-    # st.markdown(f"""
-    # <h4><b>RMSE for each defect type:</b></h4>
-    # <b>Run_Off_D1: {rmses['Run_Off_D1']}</b><br>
-    # <b>Open_Seam_D2: {rmses['Open_Seam_D2']}</b><br>
-    # <b>SPI_Errors_D3: {rmses['SPI_Errors_D3']}</b><br>
-    # <b>High_Low_D4: {rmses['High_Low_D4']}</b>
-    # """, unsafe_allow_html=True)
-
     # Combine traditional model predictions with ARIMA forecasts
     combined_predictions = {}
     for defect_type in ['Run_Off_D1', 'Open_Seam_D2', 'SPI_Errors_D3', 'High_Low_D4']:
@@ -152,34 +142,56 @@ def analyze_worker(worker_id, forecast_steps=5):
     plt.tight_layout()
     st.pyplot(fig)
 
-    # # Plotting RMSE values
-    # fig, ax = plt.subplots(figsize=(8, 4))
-    # defect_types = list(rmses.keys())
-    # rmse_values = list(rmses.values())
-    # ax.bar(defect_types, rmse_values, color='orange')
-    # ax.set_title('RMSE for each defect type', fontsize=10)
-    # ax.set_xlabel('Defect Type', fontsize=8)
-    # ax.set_ylabel('RMSE', fontsize=8)
-    # for i, v in enumerate(rmse_values):
-    #     ax.text(i, v + 0.1, f"{v:.2f}", ha='center', va='bottom', fontsize=8)
-    # st.pyplot(fig)
-
-# Function to perform demographic analysis for all workers
-def demographic_analysis_all():
-    fig, axes = plt.subplots(1, 2, figsize=(12, 6))
-    
-    axes[0].set_title('Age Distribution for All Workers', fontsize=10)
-    sns.histplot(demographic_data['Age'], kde=True, color='blue', ax=axes[0])
-    axes[0].set_xlabel('Age', fontsize=8)
-    axes[0].set_ylabel('Frequency')
-
-    axes[1].set_title('Skill Level Distribution for All Workers')
-    sns.countplot(x=demographic_data['Skill_Level'], palette='viridis', ax=axes[1])
-    axes[1].set_xlabel('Skill Level')
-    axes[1].set_ylabel('Count')
-
-    plt.tight_layout()
+    # Plotting RMSE values
+    fig, ax = plt.subplots(figsize=(8, 4))
+    defect_types = list(rmses.keys())
+    rmse_values = list(rmses.values())
+    ax.bar(defect_types, rmse_values, color='orange')
+    ax.set_title('RMSE for each defect type', fontsize=10)
+    ax.set_xlabel('Defect Type', fontsize=8)
+    ax.set_ylabel('RMSE', fontsize=8)
+    for i, v in enumerate(rmse_values):
+        ax.text(i, v + 0.1, f"{v:.2f}", ha='center', va='bottom', fontsize=8)
     st.pyplot(fig)
+
+# Function to identify the worker with the highest defect count on the last day
+def highest_defect_worker_last_day():
+    try:
+        last_date = combined_data.index.max()
+        last_day_data = combined_data.loc[last_date]
+
+        if last_day_data.empty:
+            st.write("No defect data available for the last day.")
+            return
+
+        # Sum the defects for each worker
+        last_day_data['Total_Defects'] = last_day_data[['Run_Off_D1', 'Open_Seam_D2', 'SPI_Errors_D3', 'High_Low_D4']].sum(axis=1)
+        
+        # Find the worker with the highest defects
+        highest_defect_worker = last_day_data['Total_Defects'].idxmax()
+        highest_defect_count = last_day_data.loc[highest_defect_worker, 'Total_Defects']
+        
+        # Find the defect type with the highest count for this worker
+        defect_counts = last_day_data.loc[highest_defect_worker, ['Run_Off_D1', 'Open_Seam_D2', 'SPI_Errors_D3', 'High_Low_D4']]
+        highest_defect_type = defect_counts.idxmax()
+        highest_defect_type_count = defect_counts.max()
+        
+        # Search for the worker ID in the demographic dataset
+        worker_info = demographic_data[demographic_data['Worker_ID'] == highest_defect_worker]
+
+        if not worker_info.empty:
+            highest_defect_worker_name = worker_info['Name'].values[0]
+        else:
+            highest_defect_worker_name = "Unknown"
+
+        st.markdown(f"### Worker with Highest Defect Count on {last_date.strftime('%Y-%m-%d')}")
+        st.write(f"Worker Name: {highest_defect_worker_name}")
+        st.write(f"Worker ID: {highest_defect_worker}")
+        st.write(f"Total Defects: {highest_defect_count}")
+        st.write(f"Highest Defect Type: {highest_defect_type} with count {highest_defect_type_count}")
+
+    except Exception as e:
+        st.write(f"An error occurred: {e}")
 
 # Streamlit app layout
 st.title("Worker Defect Analysis and Forecasting")
@@ -190,5 +202,5 @@ worker_id = st.text_input("Enter the Worker ID:")
 if worker_id:
     analyze_worker(worker_id)
 
-# Perform demographic analysis for all workers
-# demographic_analysis_all()
+# Identify and display the worker with the highest defect count on the last day
+highest_defect_worker_last_day()
