@@ -10,7 +10,7 @@ def calculate_count(production_value, defect_count):
     return production_value - defect_count 
 
 def record_exists(worker_id, date_str):
-    csv_file = 'defect_counts_details.csv'
+    csv_file = '/Users/minu/Desktop/MAS-Streamlit/Dataset/updated_worker_defect_details.csv'
     
     try:
         with open(csv_file, mode='r') as file:
@@ -24,7 +24,7 @@ def record_exists(worker_id, date_str):
     return False
 
 def update_defect_counts(worker_id, date_str, shift, run_off_d1, open_seam_d2, spi_errors_d3, high_low_d4, production_value):
-    csv_file = 'defect_counts_details.csv'
+    csv_file = '/Users/minu/Desktop/MAS-Streamlit/Dataset/updated_worker_defect_details.csv'
     
     defect_count = calculate_total_defects(run_off_d1, open_seam_d2, spi_errors_d3, high_low_d4)
     count = calculate_count(production_value, defect_count)
